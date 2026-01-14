@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    runs-on: macos-13  # 使用 macOS Ventura 虚拟机
+    runs-on: macos-latest  # 使用 macOS Ventura 虚拟机
 
     steps:
       - name: Checkout code
