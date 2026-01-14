@@ -1,0 +1,48 @@
+name: Build macOS App
+
+on:
+  # 允许手动触发（推荐）
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-13  # 使用 macOS Ventura 虚拟机
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install system dependencies
+        run: |
+          brew install ffmpeg
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt pyinstaller
+
+      - name: Package with PyInstaller
+        run: |
+          pyinstaller \
+            --onefile \
+            --windowed \
+            --name "MotionIllusion" \
+            --collect-all moviepy \
+            --collect-all cv2 \
+            main.py
+
+      - name: Create ZIP for distribution
+        run: |
+          cd dist
+          zip -r MotionIllusion-macOS.zip MotionIllusion
+
+      - name: Upload as Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: MotionIllusion-macOS
+          path: dist/MotionIllusion-macOS.zip
